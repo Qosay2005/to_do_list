@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+<body>
+
+<section class="to-do-list bg-gray-100 min-h-screen flex justify-center items-center">
+
+  <div class="w-[420px] bg-white rounded-2xl shadow-md p-6">
+
+    <h1 class="font-bold text-[26px] text-center">To Do List</h1>
+    <p class="text-[#6A7282] text-[12px] text-center mb-6">
+      Stay organized and productive
+    </p>
+
+    <!-- Add Task -->
+    <div class="add-task flex items-center gap-3">
+      <input 
+        type="text" 
+        placeholder="Add a new task..."
+        class="flex-1 text-[#0EA5A4] px-3 py-2 rounded-lg border border-gray-300 
+               focus:border-[#0EA5A4] focus:ring-2 focus:ring-[#0EA5A4]/30 
+               outline-none transition"
+      />
+
+      <button class="plus w-11 h-11 bg-[#0EA5A4] text-white rounded-lg 
+                     flex items-center justify-center cursor-pointer
+                     hover:scale-105 hover:bg-[#0AC4E0] transition">
+        <i class="fa-solid fa-plus text-xl"></i>
+      </button>
+    </div>
+    
+    <div class="flex items-center mt-2 justify-between w-full">
+     <button  
+            class="complete-all bg-green-500 text-white p-1 rounded-[6px] hover:bg-green-600 transition cursor-pointer">
+        Complete All
+    </button>
+    <button  
+            class="delete-all bg-red-500 text-white p-1 rounded-[6px] hover:bg-red-600 transition cursor-pointer">
+        Delete All
+    </button>
+</div>
+   
+    <div class="task-content flex flex-col items-center justify-center mt-10 text-center">
+      <i class="fa-regular fa-clipboard text-6xl text-[#9CA3AF] mb-3"></i>
+      <p class="message text-[#6B7280] font-medium">No tasks yet</p>
+      
+    </div>
+
+    
+    <div class="task-stats border-t mt-8 pt-4 flex justify-between text-sm overflow-hidden">
+      <div class="task-count text-gray-600">
+        Total Tasks : 
+        <span class="ml-1 font-semibold text-[#0EA5A4]">0</span>
+      </div>
+      <div class="task-completed text-gray-600">
+        Completed : 
+        <span class="ml-1 font-semibold text-[#0EA5A4]">0</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
