@@ -6,8 +6,6 @@ let add_task = document.querySelector(".plus")
 let task_content = document.querySelector(".task-content")
 let task_count = document.querySelector(".task-count span")
 let task_completed = document.querySelector(".task-completed span")
-let icon = document.querySelector(".task-content i")
-let message = document.querySelector(".message")
 
 let completeAllBtn = document.querySelector(".complete-all");
 let deleteAllBtn = document.querySelector(".delete-all");
@@ -29,24 +27,13 @@ add_task.onclick = function(){
         Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: "Please Enter A Task!"
+            text: "Please enter a task!"
         });
         return;
     }
 
-    if(message && document.body.contains(message)){
-        message.remove();
-    }
-
-    if(icon){
-        icon.remove();
-    }
-
-    // check duplicate
-    let task_text = document.querySelectorAll(".task_text")
     let exist = false;
-
-    task_text.forEach((task)=>{
+    document.querySelectorAll(".task_text").forEach(task=>{
         if(task.textContent.trim().toLowerCase() === input.value.trim().toLowerCase()){
             exist = true;
         }
@@ -56,7 +43,7 @@ add_task.onclick = function(){
         Swal.fire({
             icon: "warning",
             title: "Task Already Exists",
-            text: "Please Write A Different Task."
+            text: "Please write a different task."
         });
         input.value = "";
         return;
@@ -68,8 +55,8 @@ add_task.onclick = function(){
     calcTasks();
     saveToLocalStorage();
 
-  Swal.fire({
-  title: "Your Task Added Successful!",
+            Swal.fire({
+  title: "Your Task Added Successful",
   icon: "success",
   draggable: true
 });
@@ -85,20 +72,40 @@ function createTask(text, completed){
         emptyMsg.remove();
     }
 
-    let mainspan = document.createElement("span");
+    let mainspan = document.createElement("div");
     mainspan.classList.add(
-        "flex","bg-white","border-2","py-1","px-3","rounded-[6px]",
+        "flex","bg-white","border-2","py-2","px-3","rounded-[6px]",
         "items-center","justify-between","w-full","border-[#6A7282]","mb-4"
     );
 
+    // left side (checkbox + text)
+    let leftSide = document.createElement("div");
+    leftSide.classList.add("flex","items-center","gap-3");
+
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.classList.add("w-4","h-4","cursor-pointer");
+
     let text_span = document.createElement("span");
     text_span.textContent = text;
-    text_span.classList.add("text-[#0EA5A4]","task_text","cursor-pointer");
+    text_span.classList.add("text-[#0EA5A4]","task_text");
 
     if(completed){
+        checkbox.checked = true;
         text_span.classList.add("line-through");
     }
 
+    // toggle on checkbox change
+    checkbox.addEventListener("change", ()=>{
+        text_span.classList.toggle("line-through");
+        calcTasks();
+        saveToLocalStorage();
+    });
+
+    leftSide.appendChild(checkbox);
+    leftSide.appendChild(text_span);
+
+    // delete button
     let delete_button = document.createElement("button");
     delete_button.textContent = "Delete";
     delete_button.classList.add(
@@ -107,17 +114,16 @@ function createTask(text, completed){
         "hover:scale-105","duration-300","cursor-pointer"
     );
 
-    mainspan.appendChild(text_span);
+    mainspan.appendChild(leftSide);
     mainspan.appendChild(delete_button);
     task_content.appendChild(mainspan);
 }
 
 // =====================
-// click events
+// click events (delete only)
 // =====================
 document.addEventListener("click",(e)=>{
 
-    // delete task
     if(e.target.textContent === "Delete"){
 
         e.target.parentElement.remove();
@@ -129,18 +135,11 @@ document.addEventListener("click",(e)=>{
         calcTasks();
         saveToLocalStorage();
 
-       Swal.fire({
-  title: "Your Task deleted Successful!",
+        Swal.fire({
+  title: "Your Task Deleted Successful",
   icon: "success",
   draggable: true
 });
-    }
-
-    // toggle completed
-    if(e.target.classList.contains("task_text")){
-        e.target.classList.toggle("line-through");
-        calcTasks();
-        saveToLocalStorage();
     }
 
 });
@@ -159,9 +158,12 @@ completeAllBtn.addEventListener("click", ()=>{
 
         if(result.isConfirmed){
 
-            let tasks = document.querySelectorAll(".task_text");
-            tasks.forEach(task=>{
+            document.querySelectorAll(".task_text").forEach(task=>{
                 task.classList.add("line-through");
+            });
+
+            document.querySelectorAll("input[type='checkbox']").forEach(cb=>{
+                cb.checked = true;
             });
 
             calcTasks();
@@ -184,7 +186,6 @@ deleteAllBtn.addEventListener("click", ()=>{
 
     Swal.fire({
         title: "Delete all tasks?",
-        text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#e7000b",
@@ -195,7 +196,6 @@ deleteAllBtn.addEventListener("click", ()=>{
 
             task_content.innerHTML = "";
             createNoTasks();
-
             calcTasks();
             saveToLocalStorage();
 
@@ -222,28 +222,30 @@ function createNoTasks(){
 }
 
 // =====================
-// calculate tasks
+// calculate
 // =====================
 function calcTasks(){
 
     let tasks = document.querySelectorAll(".task_text");
-    let completed = document.querySelectorAll(".line-through");
+    let completed = document.querySelectorAll("input[type='checkbox']:checked");
 
     task_count.textContent = tasks.length;
     task_completed.textContent = completed.length;
 }
 
 // =====================
-// local storage save
+// save
 // =====================
 function saveToLocalStorage(){
 
     let tasks = [];
 
     document.querySelectorAll(".task_text").forEach(task=>{
+        let checkbox = task.previousElementSibling;
+
         tasks.push({
             text: task.textContent,
-            completed: task.classList.contains("line-through")
+            completed: checkbox.checked
         });
     });
 
@@ -251,7 +253,7 @@ function saveToLocalStorage(){
 }
 
 // =====================
-// local storage load
+// load
 // =====================
 function loadFromLocalStorage(){
 
@@ -260,13 +262,10 @@ function loadFromLocalStorage(){
     task_content.innerHTML = "";
 
     if(data){
-
         let tasks = JSON.parse(data);
-
         tasks.forEach(task=>{
             createTask(task.text, task.completed);
         });
-
     }
 
     if(task_content.childElementCount === 0){
